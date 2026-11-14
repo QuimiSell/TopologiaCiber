@@ -33,7 +33,12 @@ export default function LiveTelemetryChart({
   const currentAttackPps = trafficHistory.length > 0 ? trafficHistory[trafficHistory.length - 1].attackPps : 0;
 
   return (
-    <div className="fixed z-40 inset-x-3 bottom-[11.5rem] sm:inset-x-auto sm:right-6 sm:bottom-72 sm:w-[min(100vw-3rem,30rem)] lg:w-[480px] max-h-[70vh] overflow-y-auto bg-slate-950/95 border border-slate-700 rounded-xl shadow-2xl backdrop-blur-xl font-mono text-xs select-none animate-fadeIn">
+    <div
+      className="fixed z-40 inset-x-3 sm:inset-x-auto sm:right-6 tablet:right-8 sm:w-[min(100vw-1.5rem,30rem)] lg:w-[440px] xl:w-[480px] max-h-[min(70dvh,520px)] overflow-y-auto bg-slate-950/95 border border-slate-700 rounded-xl shadow-2xl backdrop-blur-xl font-mono text-xs select-none animate-fadeIn"
+      style={{
+        bottom: 'max(calc(10.5rem + env(safe-area-inset-bottom, 0px)), env(safe-area-inset-bottom, 0px))'
+      }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900 border-b border-slate-800">
         <div className="flex items-center gap-2">

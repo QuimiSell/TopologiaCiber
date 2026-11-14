@@ -15,6 +15,10 @@ import MobileBankMockup from './components/MobileBankMockup';
 
 import { TRUST_BOUNDARIES, TOPOLOGY_NODES, TOPOLOGY_LINKS } from './data/topologyData';
 import { createPacket } from './engine/packetEngine';
+import {
+  MEDIA_COMPACT_LANDSCAPE,
+  MEDIA_SIDEBAR_LAYOUT
+} from './config/layoutConfig';
 
 export default function App() {
   // Mode: Protected (AWS Hardened) vs Vulnerable (Base architecture)
@@ -76,16 +80,28 @@ export default function App() {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  // Desktop: open rack by default; mobile: keep canvas maximized
+  const [isCompactLandscape, setIsCompactLandscape] = useState(false);
+
+  // PC (≥1280): sidebar + PDU open; phones/tablets: drawer + collapse PDU in landscape
   useEffect(() => {
-    const mq = window.matchMedia('(min-width: 1024px)');
+    const mqSidebar = window.matchMedia(MEDIA_SIDEBAR_LAYOUT);
+    const mqLandscape = window.matchMedia(MEDIA_COMPACT_LANDSCAPE);
+
     const syncLayout = () => {
-      setIsToolboxOpen(mq.matches);
-      setIsEventListOpen(mq.matches);
+      const sidebar = mqSidebar.matches;
+      const compact = mqLandscape.matches;
+      setIsCompactLandscape(compact);
+      setIsToolboxOpen(sidebar);
+      setIsEventListOpen(sidebar && !compact);
     };
+
     syncLayout();
-    mq.addEventListener('change', syncLayout);
-    return () => mq.removeEventListener('change', syncLayout);
+    mqSidebar.addEventListener('change', syncLayout);
+    mqLandscape.addEventListener('change', syncLayout);
+    return () => {
+      mqSidebar.removeEventListener('change', syncLayout);
+      mqLandscape.removeEventListener('change', syncLayout);
+    };
   }, []);
 
   // Trigger SOC Alert helper
@@ -506,7 +522,11 @@ export default function App() {
   };
 
   return (
-    <div className="h-dvh min-h-0 bg-slate-950 text-slate-100 flex flex-col font-sans select-none overflow-x-hidden safe-bottom">
+    <div
+      className={`app-shell h-dvh max-h-dvh min-h-0 w-full bg-slate-950 text-slate-100 flex flex-col font-sans select-none overflow-x-hidden ${
+        isCompactLandscape ? 'app-shell-landscape-compact' : ''
+      }`}
+    >
       
       {/* 1. Header Bar */}
       <Header
@@ -542,7 +562,7 @@ export default function App() {
       />
 
       {/* 3. Central Workspace */}
-      <div className="flex-1 relative flex flex-col lg:flex-row overflow-hidden min-h-0 min-w-0">
+      <div className="flex-1 relative flex flex-col xl:flex-row overflow-hidden min-h-0 min-w-0 w-full 3xl:max-w-[2400px] 3xl:mx-auto">
         
         {/* Left Side: Device Rack */}
         <DeviceToolbox

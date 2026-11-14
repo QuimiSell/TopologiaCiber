@@ -38,7 +38,7 @@ export default function DeviceToolbox({
 }) {
   if (!isOpen) {
     return (
-      <div className="absolute top-3 left-3 z-20 lg:top-4 lg:left-4">
+      <div className="absolute top-3 left-3 z-20 xl:top-4 xl:left-4 max-w-[calc(100vw-1.5rem)]">
         <button
           onClick={onToggle}
           className="touch-target-sm flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-900/95 border border-slate-700 hover:border-cyan-500 text-slate-300 text-xs font-mono shadow-xl backdrop-blur-md transition"
@@ -60,10 +60,10 @@ export default function DeviceToolbox({
         type="button"
         aria-label="Cerrar rack de componentes"
         onClick={onToggle}
-        className="lg:hidden fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-sm"
+        className="xl:hidden fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-sm"
       />
 
-      <aside className="fixed lg:relative inset-y-0 left-0 z-50 lg:z-20 w-[min(100%,18.5rem)] lg:w-64 shrink-0 bg-slate-950/98 lg:bg-slate-950/95 border-r border-slate-800 flex flex-col select-none font-mono text-xs shadow-2xl backdrop-blur-md max-h-full lg:max-h-none">
+      <aside className="fixed xl:relative inset-y-0 left-0 z-50 xl:z-20 w-[min(100%,18.5rem)] tablet:w-[22rem] xl:w-64 shrink-0 bg-slate-950/98 xl:bg-slate-950/95 border-r border-slate-800 flex flex-col select-none font-mono text-xs shadow-2xl backdrop-blur-md max-h-full xl:max-h-none pt-[env(safe-area-inset-top)]">
         <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-900 border-b border-slate-800 safe-bottom">
           <div className="flex items-center gap-2 min-w-0">
             <Server className="w-4 h-4 text-cyan-400 shrink-0" />
@@ -76,8 +76,8 @@ export default function DeviceToolbox({
             className="touch-target-sm p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition"
             title="Cerrar panel"
           >
-            <ChevronLeft className="w-4 h-4 hidden lg:block" />
-            <X className="w-4 h-4 lg:hidden" />
+            <ChevronLeft className="w-4 h-4 hidden xl:block" />
+            <X className="w-4 h-4 xl:hidden" />
           </button>
         </div>
 

@@ -44,7 +44,7 @@ export default function SimulationRibbon({
   ];
 
   return (
-    <div className="shrink-0 bg-slate-900/95 border-b border-slate-800 px-2 sm:px-4 py-2 text-xs select-none shadow-md backdrop-blur-md space-y-2">
+    <div className="shrink-0 bg-slate-900/95 border-b border-slate-800 px-2 sm:px-4 tablet:px-5 py-2 text-xs select-none shadow-md backdrop-blur-md space-y-2 max-w-[100vw]">
       <div className="ribbon-scroll items-center gap-2 sm:gap-3">
       
       {/* 1. SECCIÓN: MODO DE ARQUITECTURA */}

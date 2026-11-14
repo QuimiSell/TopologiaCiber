@@ -21,8 +21,10 @@ export default function PacketTracerEventList({
   });
 
   return (
-    <div className={`shrink-0 bg-slate-950 border-t border-slate-800 flex flex-col shadow-2xl font-mono select-none transition-all duration-200 ${
-      isExpanded ? 'h-40 sm:h-52 lg:h-64' : 'h-auto'
+    <div className={`shrink-0 bg-slate-950 border-t border-slate-800 flex flex-col shadow-2xl font-mono select-none transition-all duration-200 pb-[env(safe-area-inset-bottom)] ${
+      isExpanded
+        ? 'h-32 max-[430px]:landscape:h-28 2xs:h-36 xs:h-40 sm:h-48 md:h-52 tablet:h-56 xl:h-64 max-h-[40dvh]'
+        : 'h-auto'
     }`}>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-3 sm:px-4 py-2 bg-slate-900 border-b border-slate-800 text-xs">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">

@@ -89,8 +89,8 @@ export default function TopologyCanvas({
   useEffect(() => {
     if (didAutoFitRef.current || !containerRef.current) return;
     const w = containerRef.current.clientWidth;
-    if (w < 1024) {
-      setZoom(Math.min(1, Math.max(0.35, w / 1680)));
+    if (w < 1280) {
+      setZoom(Math.min(1, Math.max(0.32, w / 1680)));
     }
     didAutoFitRef.current = true;
   }, []);
@@ -223,7 +223,7 @@ export default function TopologyCanvas({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchEnd}
-      className={`relative w-full h-full min-h-[240px] sm:min-h-[360px] lg:min-h-[480px] overflow-hidden bg-slate-950 select-none topology-grid touch-none ${
+      className={`relative w-full h-full min-h-[200px] min-[360px]:min-h-[260px] sm:min-h-[340px] md:min-h-[380px] tablet:min-h-[420px] xl:min-h-[480px] max-h-[75dvh] landscape:max-h-none overflow-hidden bg-slate-950 select-none topology-grid touch-none ${
         isPanning ? 'cursor-grabbing' : 'cursor-default'
       }`}
     >
@@ -249,7 +249,7 @@ export default function TopologyCanvas({
         <button
           onClick={() => {
             const w = containerRef.current?.clientWidth || 1200;
-            const autoZoom = w < 1024 ? Math.min(1, Math.max(0.35, w / 1680)) : 1;
+            const autoZoom = w < 1280 ? Math.min(1, Math.max(0.32, w / 1680)) : 1;
             setZoom(autoZoom);
             setPan({ x: 0, y: 0 });
           }}

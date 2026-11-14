@@ -19,7 +19,7 @@ export default function Header({
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <h1 className="text-sm sm:text-base font-bold text-white tracking-wide truncate max-w-[12rem] xs:max-w-none">
+            <h1 className="text-sm sm:text-base font-bold text-white tracking-wide truncate max-w-[9.5rem] 2xs:max-w-[11rem] xs:max-w-none">
               {APP_CONFIG.projectName}
             </h1>
             <span className="text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-700/50 whitespace-nowrap">
