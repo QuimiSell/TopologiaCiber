@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Smartphone, 
   Skull, 
@@ -83,6 +83,17 @@ export default function TopologyCanvas({
   const dragStartCoordsRef = useRef({ x: 0, y: 0 });
 
   const containerRef = useRef(null);
+  const pinchRef = useRef({ dist: 0, zoom: 1 });
+  const didAutoFitRef = useRef(false);
+
+  useEffect(() => {
+    if (didAutoFitRef.current || !containerRef.current) return;
+    const w = containerRef.current.clientWidth;
+    if (w < 1024) {
+      setZoom(Math.min(1, Math.max(0.35, w / 1680)));
+    }
+    didAutoFitRef.current = true;
+  }, []);
 
   const getNodePos = (id) => {
     const node = nodes.find(n => n.id === id);
@@ -130,6 +141,46 @@ export default function TopologyCanvas({
     }, 120);
   };
 
+  const handleTouchStart = (e) => {
+    if (e.target.closest('.node-card')) return;
+    if (e.touches.length === 1) {
+      const t = e.touches[0];
+      setIsPanning(true);
+      setPanStart({ x: t.clientX - pan.x, y: t.clientY - pan.y });
+    } else if (e.touches.length === 2) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      pinchRef.current = { dist, zoom };
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (e.touches.length === 1 && isPanning && !draggingNodeId) {
+      const t = e.touches[0];
+      setPan({ x: t.clientX - panStart.x, y: t.clientY - panStart.y });
+    } else if (e.touches.length === 2) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      if (pinchRef.current.dist > 0) {
+        const ratio = dist / pinchRef.current.dist;
+        setZoom(Math.min(1.8, Math.max(0.35, pinchRef.current.zoom * ratio)));
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsPanning(false);
+    setDraggingNodeId(null);
+    pinchRef.current.dist = 0;
+    setTimeout(() => {
+      isDraggingRef.current = false;
+    }, 120);
+  };
+
   const handleNodeDragStart = (e, nodeId) => {
     e.stopPropagation();
     const node = nodes.find(n => n.id === nodeId);
@@ -168,16 +219,19 @@ export default function TopologyCanvas({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      className={`relative w-full h-full overflow-hidden bg-slate-950 select-none topology-grid ${
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
+      className={`relative w-full h-full min-h-[240px] sm:min-h-[360px] lg:min-h-[480px] overflow-hidden bg-slate-950 select-none topology-grid touch-none ${
         isPanning ? 'cursor-grabbing' : 'cursor-default'
       }`}
-      style={{ minHeight: '520px' }}
     >
       {/* Zoom / View Toolbar */}
-      <div className="absolute top-4 right-4 z-30 flex items-center gap-1 bg-slate-900/90 border border-slate-700 p-1 rounded-lg shadow-xl backdrop-blur-md font-mono text-xs">
+      <div className="absolute top-2 right-2 sm:top-4 sm:right-4 z-30 flex items-center gap-0.5 sm:gap-1 bg-slate-900/95 border border-slate-700 p-1 rounded-lg shadow-xl backdrop-blur-md font-mono text-xs">
         <button
-          onClick={() => setZoom(z => Math.max(0.5, z - 0.15))}
-          className="p-1.5 rounded hover:bg-slate-800 text-slate-300 hover:text-white transition"
+          onClick={() => setZoom(z => Math.max(0.35, z - 0.15))}
+          className="touch-target-sm p-2 rounded hover:bg-slate-800 text-slate-300 hover:text-white transition"
           title="Zoom Out (-)"
         >
           <ZoomOut className="w-3.5 h-3.5" />
@@ -187,14 +241,19 @@ export default function TopologyCanvas({
         </span>
         <button
           onClick={() => setZoom(z => Math.min(1.8, z + 0.15))}
-          className="p-1.5 rounded hover:bg-slate-800 text-slate-300 hover:text-white transition"
+          className="touch-target-sm p-2 rounded hover:bg-slate-800 text-slate-300 hover:text-white transition"
           title="Zoom In (+)"
         >
           <ZoomIn className="w-3.5 h-3.5" />
         </button>
         <button
-          onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}
-          className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition border-l border-slate-800 ml-0.5"
+          onClick={() => {
+            const w = containerRef.current?.clientWidth || 1200;
+            const autoZoom = w < 1024 ? Math.min(1, Math.max(0.35, w / 1680)) : 1;
+            setZoom(autoZoom);
+            setPan({ x: 0, y: 0 });
+          }}
+          className="touch-target-sm p-2 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition border-l border-slate-800 ml-0.5"
           title="Restablecer Vista"
         >
           <Maximize2 className="w-3.5 h-3.5" />

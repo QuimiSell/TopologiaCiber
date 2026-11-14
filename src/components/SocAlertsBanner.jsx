@@ -5,7 +5,7 @@ export default function SocAlertsBanner({ alerts, onDismissAlert }) {
   if (!alerts || alerts.length === 0) return null;
 
   return (
-    <div className="absolute top-16 right-4 z-40 flex flex-col gap-2 max-w-sm pointer-events-none select-none font-mono">
+    <div className="absolute top-12 sm:top-14 left-2 right-2 sm:left-auto sm:right-3 z-40 flex flex-col gap-2 sm:max-w-sm pointer-events-none select-none font-mono">
       {alerts.slice(0, 3).map((al) => {
         const isCritical = al.severity === 'CRÍTICA' || al.dread >= 8.0;
 
