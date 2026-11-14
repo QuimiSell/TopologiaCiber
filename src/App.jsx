@@ -15,6 +15,10 @@ import MobileBankMockup from './components/MobileBankMockup';
 
 import { TRUST_BOUNDARIES, TOPOLOGY_NODES, TOPOLOGY_LINKS } from './data/topologyData';
 import { createPacket } from './engine/packetEngine';
+import {
+  MEDIA_COMPACT_LANDSCAPE,
+  MEDIA_SIDEBAR_LAYOUT
+} from './config/layoutConfig';
 
 export default function App() {
   // Mode: Protected (AWS Hardened) vs Vulnerable (Base architecture)
@@ -67,13 +71,38 @@ export default function App() {
   });
 
   // UI Drawers & Modals State
-  const [isToolboxOpen, setIsToolboxOpen] = useState(true);
+  const [isToolboxOpen, setIsToolboxOpen] = useState(false);
+  const [isEventListOpen, setIsEventListOpen] = useState(true);
   const [isTelemetryOpen, setIsTelemetryOpen] = useState(false);
   const [selectedPduEvent, setSelectedPduEvent] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null);
   const [isMatrixOpen, setIsMatrixOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  const [isCompactLandscape, setIsCompactLandscape] = useState(false);
+
+  // PC (≥1280): sidebar + PDU open; phones/tablets: drawer + collapse PDU in landscape
+  useEffect(() => {
+    const mqSidebar = window.matchMedia(MEDIA_SIDEBAR_LAYOUT);
+    const mqLandscape = window.matchMedia(MEDIA_COMPACT_LANDSCAPE);
+
+    const syncLayout = () => {
+      const sidebar = mqSidebar.matches;
+      const compact = mqLandscape.matches;
+      setIsCompactLandscape(compact);
+      setIsToolboxOpen(sidebar);
+      setIsEventListOpen(sidebar && !compact);
+    };
+
+    syncLayout();
+    mqSidebar.addEventListener('change', syncLayout);
+    mqLandscape.addEventListener('change', syncLayout);
+    return () => {
+      mqSidebar.removeEventListener('change', syncLayout);
+      mqLandscape.removeEventListener('change', syncLayout);
+    };
+  }, []);
 
   // Trigger SOC Alert helper
   const triggerAlert = useCallback((threatId, dread, message, device, status) => {
@@ -493,7 +522,11 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none overflow-hidden">
+    <div
+      className={`app-shell h-dvh max-h-dvh min-h-0 w-full bg-slate-950 text-slate-100 flex flex-col font-sans select-none overflow-x-hidden ${
+        isCompactLandscape ? 'app-shell-landscape-compact' : ''
+      }`}
+    >
       
       {/* 1. Header Bar */}
       <Header
@@ -529,7 +562,7 @@ export default function App() {
       />
 
       {/* 3. Central Workspace */}
-      <div className="flex-1 relative flex overflow-hidden">
+      <div className="flex-1 relative flex flex-col xl:flex-row overflow-hidden min-h-0 min-w-0 w-full 3xl:max-w-[2400px] 3xl:mx-auto">
         
         {/* Left Side: Device Rack */}
         <DeviceToolbox
@@ -541,7 +574,7 @@ export default function App() {
         />
 
         {/* Central Area: Draggable Canvas with Active Breach States */}
-        <main className="flex-1 relative overflow-hidden flex flex-col">
+        <main className="flex-1 relative overflow-hidden flex flex-col min-h-0 min-w-0">
           <TopologyCanvas
             trustBoundaries={TRUST_BOUNDARIES}
             nodes={nodes}
@@ -584,6 +617,8 @@ export default function App() {
         selectedEvent={selectedPduEvent}
         isPaused={isPaused}
         onTogglePause={() => setIsPaused(prev => !prev)}
+        isExpanded={isEventListOpen}
+        onToggleExpanded={() => setIsEventListOpen(prev => !prev)}
       />
 
       {/* 6. SOC P1 Incident Command Modal */}

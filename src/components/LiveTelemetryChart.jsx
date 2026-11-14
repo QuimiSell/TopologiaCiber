@@ -33,13 +33,19 @@ export default function LiveTelemetryChart({
   const currentAttackPps = trafficHistory.length > 0 ? trafficHistory[trafficHistory.length - 1].attackPps : 0;
 
   return (
-    <div className="fixed bottom-68 right-6 z-40 w-[480px] bg-slate-950/95 border border-slate-700 rounded-xl shadow-2xl backdrop-blur-xl font-mono text-xs select-none animate-fadeIn">
+    <div
+      className="fixed z-40 inset-x-3 sm:inset-x-auto sm:right-6 tablet:right-8 sm:w-[min(100vw-1.5rem,30rem)] lg:w-[440px] xl:w-[480px] max-h-[min(70dvh,520px)] overflow-y-auto bg-slate-950/95 border border-slate-700 rounded-xl shadow-2xl backdrop-blur-xl font-mono text-xs select-none animate-fadeIn"
+      style={{
+        bottom: 'max(calc(10.5rem + env(safe-area-inset-bottom, 0px)), env(safe-area-inset-bottom, 0px))'
+      }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900 border-b border-slate-800">
         <div className="flex items-center gap-2">
           <Activity className="w-4 h-4 text-emerald-400" />
-          <h3 className="font-bold text-slate-200 text-xs tracking-wider uppercase">
-            Telemetría de Tráfico en Vivo (Osciloscopio SOC)
+          <h3 className="font-bold text-slate-200 text-[10px] sm:text-xs tracking-wider uppercase truncate">
+            <span className="hidden sm:inline">Telemetría de Tráfico en Vivo (Osciloscopio SOC)</span>
+            <span className="sm:hidden">Tel. SOC</span>
           </h3>
         </div>
         <button
@@ -51,7 +57,7 @@ export default function LiveTelemetryChart({
       </div>
 
       {/* Metrics Bar */}
-      <div className="grid grid-cols-4 gap-2 p-3 bg-slate-900/50 border-b border-slate-800 text-center text-[10px]">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 bg-slate-900/50 border-b border-slate-800 text-center text-[10px]">
         <div className="p-1.5 rounded bg-slate-950 border border-slate-800">
           <span className="text-slate-500 block text-[9px]">TRÁFICO VÁLIDO</span>
           <span className="font-bold text-emerald-400 text-xs">{currentLegitPps} pps</span>
