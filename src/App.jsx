@@ -20,7 +20,7 @@ import {
   MEDIA_SIDEBAR_LAYOUT
 } from './config/layoutConfig';
 
-export default function SimulatorApp({ onBackToMenu }) {
+export default function SimulatorApp() {
   // Mode: Protected (AWS Hardened) vs Vulnerable (Base architecture)
   const [mode, setMode] = useState('protected');
   const [isBackgroundTrafficOn, setIsBackgroundTrafficOn] = useState(true);
@@ -531,7 +531,6 @@ export default function SimulatorApp({ onBackToMenu }) {
       {/* 1. Header Bar */}
       <Header
         mode={mode}
-        onBackToMenu={onBackToMenu}
         onToggleMobile={() => setIsMobileOpen(prev => !prev)}
         onToggleMatrix={() => setIsMatrixOpen(true)}
         onToggleTelemetry={() => setIsTelemetryOpen(prev => !prev)}
@@ -575,7 +574,7 @@ export default function SimulatorApp({ onBackToMenu }) {
         />
 
         {/* Central Area: Draggable Canvas with Active Breach States */}
-        <main className="flex-1 relative overflow-hidden flex flex-col min-h-0 min-w-0">
+        <main className="flex-1 relative overflow-hidden flex flex-col min-h-0 min-w-0 h-full">
           <TopologyCanvas
             trustBoundaries={TRUST_BOUNDARIES}
             nodes={nodes}

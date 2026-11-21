@@ -75,7 +75,7 @@ export default function InfoModal({ isOpen, onClose }) {
           </div>
 
           <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-[11px] text-slate-400">
-            <strong>Declaración académica:</strong> Banco Guatemalteco es una entidad 100% ficticia. Las respuestas HTTP y eventos de la bitácora son simulaciones didácticas diseñadas para ilustrar los controles propuestos en el informe de 2026.
+            <strong>Alcance didáctico:</strong> el nombre <em>Banco Guatemalteco</em> es abstracción de escenario; lo que modelamos son controles y topología reales del informe (Grupo 2, 2026). Los paquetes HTTP y alertas en pantalla ilustran ese diseño — no afirman métricas operativas medidas.
           </div>
 
         </div>

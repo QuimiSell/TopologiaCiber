@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { TOPOLOGY_BOARD } from '../config/topologyLayoutConfig';
 import { 
   Smartphone, 
   Skull, 
@@ -71,8 +72,7 @@ export default function TopologyCanvas({
   onNodeClick,
   onPacketClick,
   onNodeMove,
-  focusedBoundaryId = null,
-  presentationMode = false
+  focusedBoundaryId = null
 }) {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -86,16 +86,48 @@ export default function TopologyCanvas({
 
   const containerRef = useRef(null);
   const pinchRef = useRef({ dist: 0, zoom: 1 });
-  const didAutoFitRef = useRef(false);
+  const userAdjustedViewRef = useRef(false);
+
+  const fitToView = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const w = el.clientWidth;
+    const h = el.clientHeight;
+    if (w < 1 || h < 1) return;
+
+    const { width: cw, height: ch, padding } = TOPOLOGY_BOARD;
+    const scaleX = (w - padding * 2) / cw;
+    const scaleY = (h - padding * 2) / ch;
+    const nextZoom = Math.min(1, Math.max(0.28, Math.min(scaleX, scaleY)));
+
+    setZoom(nextZoom);
+    setPan({
+      x: (w - cw * nextZoom) / 2,
+      y: (h - ch * nextZoom) / 2
+    });
+    userAdjustedViewRef.current = false;
+  }, []);
 
   useEffect(() => {
-    if (didAutoFitRef.current || !containerRef.current) return;
-    const w = containerRef.current.clientWidth;
-    if (w < 1280) {
-      setZoom(Math.min(1, Math.max(0.32, w / 1680)));
-    }
-    didAutoFitRef.current = true;
-  }, []);
+    fitToView();
+    const el = containerRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+
+    let raf = 0;
+    const ro = new ResizeObserver(() => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        if (!userAdjustedViewRef.current) {
+          fitToView();
+        }
+      });
+    });
+    ro.observe(el);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, [fitToView]);
 
   const getNodePos = (id) => {
     const node = nodes.find(n => n.id === id);
@@ -103,8 +135,13 @@ export default function TopologyCanvas({
     return { x: node.x + 107, y: node.y + 55 };
   };
 
+  const markViewAdjusted = () => {
+    userAdjustedViewRef.current = true;
+  };
+
   const handleMouseDown = (e) => {
     if (e.target.closest('.node-card')) return;
+    markViewAdjusted();
     setIsPanning(true);
     setPanStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
   };
@@ -123,10 +160,12 @@ export default function TopologyCanvas({
       const snappedX = Math.round(rawX / 16) * 16;
       const snappedY = Math.round(rawY / 16) * 16;
 
+      markViewAdjusted();
       if (onNodeMove) {
         onNodeMove(draggingNodeId, Math.max(10, snappedX), Math.max(10, snappedY));
       }
     } else if (isPanning) {
+      markViewAdjusted();
       setPan({
         x: e.clientX - panStart.x,
         y: e.clientY - panStart.y
@@ -161,13 +200,15 @@ export default function TopologyCanvas({
   const handleTouchMove = (e) => {
     if (e.touches.length === 1 && isPanning && !draggingNodeId) {
       const t = e.touches[0];
+      markViewAdjusted();
       setPan({ x: t.clientX - panStart.x, y: t.clientY - panStart.y });
     } else if (e.touches.length === 2) {
       const dist = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
       );
-      if (pinchRef.current.dist > 0) {
+        if (pinchRef.current.dist > 0) {
+        markViewAdjusted();
         const ratio = dist / pinchRef.current.dist;
         setZoom(Math.min(1.8, Math.max(0.35, pinchRef.current.zoom * ratio)));
       }
@@ -225,14 +266,17 @@ export default function TopologyCanvas({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchEnd}
-      className={`relative w-full h-full min-h-[200px] min-[360px]:min-h-[260px] sm:min-h-[340px] md:min-h-[380px] tablet:min-h-[420px] xl:min-h-[480px] max-h-[75dvh] landscape:max-h-none overflow-hidden bg-slate-950 select-none topology-grid touch-none ${
-        isPanning ? 'cursor-grabbing' : 'cursor-default'
+      className={`relative w-full h-full min-h-0 flex-1 overflow-hidden bg-slate-950 select-none topology-grid touch-none ${
+        isPanning ? 'cursor-grabbing' : 'cursor-grab'
       }`}
     >
       {/* Zoom / View Toolbar */}
       <div className="absolute top-2 right-2 sm:top-4 sm:right-4 z-30 flex items-center gap-0.5 sm:gap-1 bg-slate-900/95 border border-slate-700 p-1 rounded-lg shadow-xl backdrop-blur-md font-mono text-xs">
         <button
-          onClick={() => setZoom(z => Math.max(0.35, z - 0.15))}
+          onClick={() => {
+            markViewAdjusted();
+            setZoom(z => Math.max(0.35, z - 0.15));
+          }}
           className="touch-target-sm p-2 rounded hover:bg-slate-800 text-slate-300 hover:text-white transition"
           title="Zoom Out (-)"
         >
@@ -242,21 +286,19 @@ export default function TopologyCanvas({
           {Math.round(zoom * 100)}%
         </span>
         <button
-          onClick={() => setZoom(z => Math.min(1.8, z + 0.15))}
+          onClick={() => {
+            markViewAdjusted();
+            setZoom(z => Math.min(1.8, z + 0.15));
+          }}
           className="touch-target-sm p-2 rounded hover:bg-slate-800 text-slate-300 hover:text-white transition"
           title="Zoom In (+)"
         >
           <ZoomIn className="w-3.5 h-3.5" />
         </button>
         <button
-          onClick={() => {
-            const w = containerRef.current?.clientWidth || 1200;
-            const autoZoom = w < 1280 ? Math.min(1, Math.max(0.32, w / 1680)) : 1;
-            setZoom(autoZoom);
-            setPan({ x: 0, y: 0 });
-          }}
+          onClick={() => fitToView()}
           className="touch-target-sm p-2 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition border-l border-slate-800 ml-0.5"
-          title="Restablecer Vista"
+          title="Centrar y ajustar arquitectura"
         >
           <Maximize2 className="w-3.5 h-3.5" />
         </button>
@@ -594,7 +636,7 @@ export default function TopologyCanvas({
                 key={node.id}
                 onClick={(e) => handleNodeCardClick(e, node)}
                 onMouseDown={(e) => {
-                  if (!presentationMode) handleNodeDragStart(e, node.id);
+                  if (onNodeMove) handleNodeDragStart(e, node.id);
                 }}
                 style={{
                   position: 'absolute',
@@ -603,7 +645,7 @@ export default function TopologyCanvas({
                   width: '215px',
                   opacity: nodeDimmed ? 0.32 : 1
                 }}
-                className={`node-card ${presentationMode ? 'cursor-pointer' : 'cursor-grab active:cursor-grabbing'} rounded-xl p-3 transition-all duration-200 border shadow-xl font-mono text-xs select-none backdrop-blur-md ${
+                className={`node-card ${onNodeMove ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} rounded-xl p-3 transition-all duration-200 border shadow-xl font-mono text-xs select-none backdrop-blur-md ${
                   breachInfo
                     ? 'bg-rose-950/95 border-rose-500 node-danger-ring scale-105 z-30'
                     : activeDrop

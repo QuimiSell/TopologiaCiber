@@ -1,9 +1,9 @@
 import React from 'react';
-import { Shield, Smartphone, BarChart3, Info, Activity, ArrowLeft } from 'lucide-react';
+import { Shield, Smartphone, BarChart3, Info, Activity } from 'lucide-react';
 import { APP_CONFIG } from '../config/appConfig';
+import PresentationModeNav from './PresentationModeNav';
 
 export default function Header({ 
-  onBackToMenu,
   onToggleMobile, 
   onToggleMatrix, 
   onToggleTelemetry,
@@ -58,17 +58,7 @@ export default function Header({
 
       {/* Action Navigation Buttons */}
       <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end w-full lg:w-auto">
-        {onBackToMenu && (
-          <button
-            type="button"
-            onClick={onBackToMenu}
-            className="touch-target-sm flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition"
-            title="Volver al menú de presentación"
-          >
-            <ArrowLeft className="w-4 h-4 text-slate-400 shrink-0" />
-            <span className="hidden sm:inline">Inicio</span>
-          </button>
-        )}
+        <PresentationModeNav compact />
         <button
           onClick={onToggleTelemetry}
           className={`touch-target-sm flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-lg text-xs font-bold border transition ${
