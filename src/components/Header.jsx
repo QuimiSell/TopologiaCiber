@@ -1,6 +1,8 @@
 import React from 'react';
-import { Shield, Smartphone, BarChart3, Info, Activity } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Shield, Smartphone, BarChart3, Info, Activity, ArrowLeft } from 'lucide-react';
 import { APP_CONFIG } from '../config/appConfig';
+import { ROUTES } from '../routes';
 import PresentationModeNav from './PresentationModeNav';
 
 export default function Header({ 
@@ -13,6 +15,18 @@ export default function Header({
 }) {
   return (
     <header className="shrink-0 border-b border-slate-800 bg-slate-900/95 backdrop-blur-md px-3 sm:px-5 py-2 sm:py-2.5 flex flex-col gap-2 sm:gap-3 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between z-40 shadow-xl select-none font-mono">
+      <div className="flex items-center gap-2 w-full lg:w-auto shrink-0">
+        <Link
+          to={ROUTES.home}
+          className="touch-target-sm flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-600 hover:border-slate-500 transition shrink-0"
+          title="Volver al inicio"
+        >
+          <ArrowLeft className="w-4 h-4 shrink-0" />
+          <span>Inicio</span>
+        </Link>
+        <PresentationModeNav compact showHome={false} />
+      </div>
+
       {/* Brand & Title */}
       <div className="flex items-start sm:items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
         <div className="shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-cyan-600 to-blue-800 flex items-center justify-center shadow-lg shadow-cyan-900/30">
@@ -58,7 +72,6 @@ export default function Header({
 
       {/* Action Navigation Buttons */}
       <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end w-full lg:w-auto">
-        <PresentationModeNav compact />
         <button
           onClick={onToggleTelemetry}
           className={`touch-target-sm flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-lg text-xs font-bold border transition ${
