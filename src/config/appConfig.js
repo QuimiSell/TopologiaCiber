@@ -12,5 +12,6 @@ export const APP_CONFIG = {
   defaultMode: 'protected',
   
   reportReference: 'Informe General Grupo 2 (2026)',
-  academicDisclaimer: 'Entidad ficticia · Simulación didáctica local en navegador · Ejecución a $0 costo'
+  academicDisclaimer:
+    'El nombre del banco es solo abstracción didáctica; la arquitectura AWS, amenazas y controles provienen del informe del proyecto — no son invento de la simulación.'
 };
