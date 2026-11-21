@@ -34,25 +34,6 @@ export default function WelcomeScreen() {
 
         <div className="w-full grid gap-4 sm:gap-5 sm:grid-cols-2">
           <Link
-            to={ROUTES.professional}
-            className="group text-left rounded-2xl border border-slate-700/80 bg-slate-900/80 hover:bg-slate-900 hover:border-cyan-600/50 p-5 sm:p-6 transition-all shadow-xl hover:shadow-cyan-900/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
-          >
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <div className="w-11 h-11 rounded-xl bg-cyan-950/80 border border-cyan-700/40 flex items-center justify-center">
-                <Presentation className="w-5 h-5 text-cyan-400" />
-              </div>
-              <ArrowRight className="w-5 h-5 text-slate-600 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition shrink-0 mt-1" />
-            </div>
-            <h2 className="text-lg font-bold text-white mb-1.5">Presentación profesional</h2>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Simulador completo: topología interactiva, inyección de ataques, telemetría SOC, PDU y modo vulnerable vs protegido.
-            </p>
-            <span className="inline-block mt-4 text-[10px] font-mono font-semibold px-2 py-1 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800/50">
-              Experiencia al 100 %
-            </span>
-          </Link>
-
-          <Link
             to={ROUTES.quick}
             className="group text-left rounded-2xl border border-slate-700/80 bg-slate-900/80 hover:bg-slate-900 hover:border-amber-500/40 p-5 sm:p-6 transition-all shadow-xl hover:shadow-amber-900/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
           >
@@ -68,6 +49,25 @@ export default function WelcomeScreen() {
             </p>
             <span className="inline-block mt-4 text-[10px] font-mono font-semibold px-2 py-1 rounded bg-amber-950/50 text-amber-300 border border-amber-800/40">
               ~5 min · sin simulación
+            </span>
+          </Link>
+
+          <Link
+            to={ROUTES.professional}
+            className="group text-left rounded-2xl border border-slate-700/80 bg-slate-900/80 hover:bg-slate-900 hover:border-cyan-600/50 p-5 sm:p-6 transition-all shadow-xl hover:shadow-cyan-900/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
+          >
+            <div className="flex items-start justify-between gap-3 mb-3">
+              <div className="w-11 h-11 rounded-xl bg-cyan-950/80 border border-cyan-700/40 flex items-center justify-center">
+                <Presentation className="w-5 h-5 text-cyan-400" />
+              </div>
+              <ArrowRight className="w-5 h-5 text-slate-600 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition shrink-0 mt-1" />
+            </div>
+            <h2 className="text-lg font-bold text-white mb-1.5">Presentación profesional</h2>
+            <p className="text-sm text-slate-400 leading-relaxed">
+              Simulador completo: topología interactiva, inyección de ataques, telemetría SOC, PDU y modo vulnerable vs protegido.
+            </p>
+            <span className="inline-block mt-4 text-[10px] font-mono font-semibold px-2 py-1 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800/50">
+              Experiencia al 100 %
             </span>
           </Link>
         </div>
