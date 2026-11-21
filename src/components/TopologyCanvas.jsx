@@ -70,7 +70,9 @@ export default function TopologyCanvas({
   mode,
   onNodeClick,
   onPacketClick,
-  onNodeMove
+  onNodeMove,
+  focusedBoundaryId = null,
+  presentationMode = false
 }) {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -283,31 +285,34 @@ export default function TopologyCanvas({
           </defs>
 
           {/* 1. Trust Boundaries Containers */}
-          {trustBoundaries.map((tb) => (
-            <g key={tb.id}>
-              <rect
-                x={tb.x}
-                y={tb.y}
-                width={tb.width}
-                height={tb.height}
-                rx="10"
-                fill={tb.color}
-                stroke={tb.borderColor}
-                strokeWidth="1.2"
-                strokeDasharray="5,4"
-              />
-              <foreignObject x={tb.x + 10} y={tb.y + 8} width={tb.width - 20} height="40">
-                <div className="flex flex-col font-mono">
-                  <span className="text-[10px] font-bold text-slate-300 uppercase">
-                    {tb.id}
-                  </span>
-                  <span className="text-[9px] text-slate-400 truncate">
-                    {tb.name}
-                  </span>
-                </div>
-              </foreignObject>
-            </g>
-          ))}
+          {trustBoundaries.map((tb) => {
+            const boundaryFocused = !focusedBoundaryId || tb.id === focusedBoundaryId;
+            return (
+              <g key={tb.id} opacity={boundaryFocused ? 1 : 0.28}>
+                <rect
+                  x={tb.x}
+                  y={tb.y}
+                  width={tb.width}
+                  height={tb.height}
+                  rx="10"
+                  fill={tb.color}
+                  stroke={tb.borderColor}
+                  strokeWidth={boundaryFocused && focusedBoundaryId ? '2' : '1.2'}
+                  strokeDasharray="5,4"
+                />
+                <foreignObject x={tb.x + 10} y={tb.y + 8} width={tb.width - 20} height="40">
+                  <div className="flex flex-col font-mono">
+                    <span className="text-[10px] font-bold text-slate-300 uppercase">
+                      {tb.id}
+                    </span>
+                    <span className="text-[9px] text-slate-400 truncate">
+                      {tb.name}
+                    </span>
+                  </div>
+                </foreignObject>
+              </g>
+            );
+          })}
 
           {/* 2. Topology Links */}
           {links.map((link) => {
@@ -582,19 +587,23 @@ export default function TopologyCanvas({
             const isInspecting = activePackets.some(p => p.state === 'inspecting' && p.nextNode === node.id);
             const activeDrop = activePackets.find(p => p.state === 'dropped' && p.nextNode === node.id);
             const activeDelivered = activePackets.find(p => p.state === 'delivered' && p.nextNode === node.id);
+            const nodeDimmed = focusedBoundaryId && node.boundaryId !== focusedBoundaryId;
 
             return (
               <div
                 key={node.id}
                 onClick={(e) => handleNodeCardClick(e, node)}
-                onMouseDown={(e) => handleNodeDragStart(e, node.id)}
+                onMouseDown={(e) => {
+                  if (!presentationMode) handleNodeDragStart(e, node.id);
+                }}
                 style={{
                   position: 'absolute',
                   left: `${node.x}px`,
                   top: `${node.y}px`,
-                  width: '215px'
+                  width: '215px',
+                  opacity: nodeDimmed ? 0.32 : 1
                 }}
-                className={`node-card cursor-grab active:cursor-grabbing rounded-xl p-3 transition-all duration-200 border shadow-xl font-mono text-xs select-none backdrop-blur-md ${
+                className={`node-card ${presentationMode ? 'cursor-pointer' : 'cursor-grab active:cursor-grabbing'} rounded-xl p-3 transition-all duration-200 border shadow-xl font-mono text-xs select-none backdrop-blur-md ${
                   breachInfo
                     ? 'bg-rose-950/95 border-rose-500 node-danger-ring scale-105 z-30'
                     : activeDrop

@@ -20,7 +20,7 @@ import {
   MEDIA_SIDEBAR_LAYOUT
 } from './config/layoutConfig';
 
-export default function App() {
+export default function SimulatorApp({ onBackToMenu }) {
   // Mode: Protected (AWS Hardened) vs Vulnerable (Base architecture)
   const [mode, setMode] = useState('protected');
   const [isBackgroundTrafficOn, setIsBackgroundTrafficOn] = useState(true);
@@ -531,6 +531,7 @@ export default function App() {
       {/* 1. Header Bar */}
       <Header
         mode={mode}
+        onBackToMenu={onBackToMenu}
         onToggleMobile={() => setIsMobileOpen(prev => !prev)}
         onToggleMatrix={() => setIsMatrixOpen(true)}
         onToggleTelemetry={() => setIsTelemetryOpen(prev => !prev)}
