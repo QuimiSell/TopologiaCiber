@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ChevronLeft, ChevronRight, Map } from 'lucide-react';
+import { ROUTES, quickPathForSlideIndex, slideIndexFromQuickParam } from '../routes';
 import TopologyCanvas from './TopologyCanvas';
 import NodeDetailsModal from './NodeDetailsModal';
 import { TRUST_BOUNDARIES, TOPOLOGY_NODES, TOPOLOGY_LINKS } from '../data/topologyData';
@@ -26,8 +28,10 @@ const BOUNDARY_SLIDES = TRUST_BOUNDARIES.map((tb) => ({
 
 const SLIDES = [OVERVIEW_SLIDE, ...BOUNDARY_SLIDES];
 
-export default function QuickArchitecturePresentation({ onBack }) {
-  const [slideIndex, setSlideIndex] = useState(0);
+export default function QuickArchitecturePresentation() {
+  const { slideId } = useParams();
+  const navigate = useNavigate();
+  const slideIndex = slideIndexFromQuickParam(slideId);
   const [selectedNode, setSelectedNode] = useState(null);
 
   const slide = SLIDES[slideIndex];
@@ -38,15 +42,16 @@ export default function QuickArchitecturePresentation({ onBack }) {
     [focusedBoundaryId]
   );
 
-  const goPrev = () => setSlideIndex((i) => Math.max(0, i - 1));
-  const goNext = () => setSlideIndex((i) => Math.min(SLIDES.length - 1, i + 1));
+  const goToSlide = (index) => navigate(quickPathForSlideIndex(index));
+  const goPrev = () => goToSlide(Math.max(0, slideIndex - 1));
+  const goNext = () => goToSlide(Math.min(SLIDES.length - 1, slideIndex + 1));
 
   return (
     <div className="h-dvh max-h-dvh min-h-0 w-full bg-slate-950 text-slate-100 flex flex-col overflow-hidden">
       <header className="shrink-0 border-b border-slate-800 bg-slate-900/95 backdrop-blur-md px-3 sm:px-5 py-2.5 flex items-center gap-3 z-40">
         <button
           type="button"
-          onClick={onBack}
+          onClick={() => navigate(ROUTES.home)}
           className="touch-target-sm flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -122,7 +127,7 @@ export default function QuickArchitecturePresentation({ onBack }) {
                 <button
                   key={s.id}
                   type="button"
-                  onClick={() => setSlideIndex(i)}
+                  onClick={() => goToSlide(i)}
                   className={`w-2 h-2 rounded-full transition ${
                     i === slideIndex ? 'bg-amber-400' : 'bg-slate-700 hover:bg-slate-500'
                   }`}

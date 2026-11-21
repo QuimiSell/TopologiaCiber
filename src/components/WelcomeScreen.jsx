@@ -1,8 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Shield, Zap, Presentation, ArrowRight, Layers } from 'lucide-react';
 import { APP_CONFIG } from '../config/appConfig';
+import { ROUTES } from '../routes';
 
-export default function WelcomeScreen({ onSelectProfessional, onSelectQuick }) {
+export default function WelcomeScreen() {
   return (
     <div className="min-h-dvh w-full bg-slate-950 text-slate-100 flex flex-col items-center justify-center px-4 py-10 sm:py-14 overflow-x-hidden">
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -34,9 +36,8 @@ export default function WelcomeScreen({ onSelectProfessional, onSelectQuick }) {
         </p>
 
         <div className="w-full grid gap-4 sm:gap-5 sm:grid-cols-2">
-          <button
-            type="button"
-            onClick={onSelectProfessional}
+          <Link
+            to={ROUTES.professional}
             className="group text-left rounded-2xl border border-slate-700/80 bg-slate-900/80 hover:bg-slate-900 hover:border-cyan-600/50 p-5 sm:p-6 transition-all shadow-xl hover:shadow-cyan-900/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
           >
             <div className="flex items-start justify-between gap-3 mb-3">
@@ -52,11 +53,10 @@ export default function WelcomeScreen({ onSelectProfessional, onSelectQuick }) {
             <span className="inline-block mt-4 text-[10px] font-mono font-semibold px-2 py-1 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800/50">
               Experiencia al 100 %
             </span>
-          </button>
+          </Link>
 
-          <button
-            type="button"
-            onClick={onSelectQuick}
+          <Link
+            to={ROUTES.quick}
             className="group text-left rounded-2xl border border-slate-700/80 bg-slate-900/80 hover:bg-slate-900 hover:border-amber-500/40 p-5 sm:p-6 transition-all shadow-xl hover:shadow-amber-900/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
           >
             <div className="flex items-start justify-between gap-3 mb-3">
@@ -72,7 +72,7 @@ export default function WelcomeScreen({ onSelectProfessional, onSelectQuick }) {
             <span className="inline-block mt-4 text-[10px] font-mono font-semibold px-2 py-1 rounded bg-amber-950/50 text-amber-300 border border-amber-800/40">
               ~5 min · sin simulación
             </span>
-          </button>
+          </Link>
         </div>
       </div>
     </div>

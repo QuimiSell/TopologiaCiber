@@ -1,26 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import WelcomeScreen from './components/WelcomeScreen';
 import QuickArchitecturePresentation from './components/QuickArchitecturePresentation';
 import SimulatorApp from './App';
+import { ROUTES } from './routes';
 
-/**
- * Shell de navegación: bienvenida → simulador profesional o arquitectura rápida.
- */
+function ProfessionalRoute() {
+  const navigate = useNavigate();
+  return <SimulatorApp onBackToMenu={() => navigate(ROUTES.home)} />;
+}
+
 export default function RootApp() {
-  const [view, setView] = useState('welcome');
-
-  if (view === 'welcome') {
-    return (
-      <WelcomeScreen
-        onSelectProfessional={() => setView('professional')}
-        onSelectQuick={() => setView('quick')}
-      />
-    );
-  }
-
-  if (view === 'quick') {
-    return <QuickArchitecturePresentation onBack={() => setView('welcome')} />;
-  }
-
-  return <SimulatorApp onBackToMenu={() => setView('welcome')} />;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path={ROUTES.home} element={<WelcomeScreen />} />
+        <Route path={ROUTES.professional} element={<ProfessionalRoute />} />
+        <Route path={`${ROUTES.quick}/:slideId?`} element={<QuickArchitecturePresentation />} />
+        <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
